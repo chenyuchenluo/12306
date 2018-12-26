@@ -1,5 +1,4 @@
-
-# -- coding: utf-8 --
+# coding=utf-8
 # 2.7版本 字符串有两种编码格式（Unicode、utf-8） 防止输出错误
 
 import time 		# 时间
@@ -32,7 +31,6 @@ url_login_check_one = 'https://kyfw.12306.cn/passport/web/auth/uamtk'
 url_login_check_two = 'https://kyfw.12306.cn/otn/uamauthclient'
 url_init_travels = 'https://kyfw.12306.cn/otn/passengers/init'
 url_left_ticket = 'https://kyfw.12306.cn/otn/leftTicket/queryA?leftTicketDTO.train_date=%s&leftTicketDTO.from_station=%s&leftTicketDTO.to_station=%s&purpose_codes=ADULT'
-
 # 点击 预定 后发送的消息
 url_user_status = 'https://kyfw.12306.cn/otn/login/checkUser'
 url_order_ticket_one = 'https://kyfw.12306.cn/otn/leftTicket/submitOrderRequest'
@@ -66,13 +64,15 @@ def init():
 	initCity(c_js)
 
 	global from_station
+	global from_station_code
 	global to_station
+	global to_station_code
 	global queryDate
 
-	file = open(home_path + os.sep + '信息表.txt','a+')
+	file = open(home_path + os.sep + 'shuoming.txt','a+')
 	file.close()
 
-	file = open(home_path + os.sep + '信息表.txt','r')
+	file = open(home_path + os.sep + 'shuoming.txt','r')
 	content = file.readline()
 	file.close()
 
@@ -80,7 +80,7 @@ def init():
 
 	info = content.split('=')
 	if len(info) < 5:
-		print u'缺少必要信息，请先完善 信息表.txt。'
+		print('>>> 缺少必须信息，先完善 shuoming.txt')
 		exit()
 
 	from_station  = info[3]
@@ -116,13 +116,13 @@ def inputNum(min_v, max_v):
 	try:
 		temp = input()
 	except Exception as e:
-		print u'输入错误，重新输入'
+		print('>>> Error, 重新输入')
 		return [False]
 	
 	if type(temp) == int and temp >= min_v and temp <= max_v:
 		return [True,temp]
 	else:
-		print u'输入错误，重新输入'
+		print('>>> Error, 重新输入')
 		return [False]
 
 def getANum(min_v,max_v):
@@ -141,31 +141,32 @@ def initCity(city):
 
 def inputTrainInfo():
 	global input_Trains
-	print(format(u'','-^40'))
-	print u'例如:k2276 g1890 k4792'
-	print u'请输入期望的车次，默认全部'
+	print('   ----------------------')
+	print('   例如:k2276 g1890 k4792')
+	print('>>> 请输入车次，按 enter 默认全部')
 	trains = raw_input()
 	trains = trains.upper()
 	input_Trains = trains.split()
 	# input_Trains = ['G4314','G1874','G1862','G1882','G1894','G1870']
 
 	if not input_Trains:
-		input_Trains = ['K4808','K2278','T328']
+		# input_Trains = ['K4808','K2278','T328']
+		input_Trains = []
 
 def inputSeatInfo():
 	global input_Seats
 	input_Seats = []
-	print(format(u'','-^40'))
+	print('   ----------------------')
 	for index in seat_desc:
-		print u'* %d:%s'%(index,seat_desc[index])
-	print u'例如:5 4 6 3 2 1 7，多个按先后判断'
+		print('   * %d:%s'%(index,seat_desc[index]))
+	print('>>> 例如:5 4 6 3 2 1 7')
 	temp = raw_input()
 	temp = temp.split()
 	for index in temp:
 		if type(int(index)) == type(1) and int(index) >= 1 and int(index) <= 7 :
 			input_Seats.append(index)
 		else:
-			print('ERROR 输入中存在错误，请重新输入')
+			print('>>> Error, 重新输入')
 			inputSeatInfo()
 			return
 
@@ -204,7 +205,7 @@ def requestImgCode():
 		# 关闭，只是代码关闭，实际上图片浏览器没有关闭，但是终端已经可以进行交互了(结束阻塞)
 		im.close()
 	except:
-		print u'图片错误或不存在'
+		print('>>> Error, 验证码图片获取错误')
 		return requestImgCode()
 # 验证验证码
 def checkImageIds():
@@ -221,7 +222,7 @@ def checkImageIds():
 	# ---------------------------------------  
 	#=======================================================================
 
-	imageIds = raw_input('请输入验证码位置 1~4 5~8，以空格分隔[例如:1 7]\n')
+	imageIds = raw_input('>>> 请输入正确的id 1~4 5~8, 多个用空格隔开。[例如:1 7]\n')
 	answerIds = imageIds.split(' ')
 
 	tempList = []
@@ -231,7 +232,7 @@ def checkImageIds():
 			tempList.append(img_code_row[int(Id) - 1])
 			tempList.append(img_code_col[int(Id) - 1])
 		else:
-			print u'验证码坐标错误'
+			print('>>> Error, 答案错误')
 			return False
 
 	headers = {
@@ -257,7 +258,7 @@ def checkImageIds():
 	code = result['result_code']
 	
 	# 取出验证结果，4：成功  5：验证失败  7：过期
-	print u'%s'%result['result_message']
+	print('>>> %s'%result['result_message'])
 	if str(code) == '4':
 		return True
 	else:
@@ -286,7 +287,7 @@ def login():
 		'X-Requested-With':'XMLHttpRequest',
 	}
 
-	print u'发送登录请求...'
+	print('>>> 发送登录请求。。。')
 	state = False
 	while not state:
 		try:
@@ -295,7 +296,7 @@ def login():
 			state = True
 		except Exception as e:
 			pass
-	print u'%s'%result['result_message']
+	print('>>> %s'%result['result_message'])
 	if result['result_code'] == 0:
 		pass
 	else:
@@ -308,12 +309,11 @@ def login():
 		'appid':'otn'
 	}
 
-	print u'发送验证登录请求...'
+	print('>>> 发送验证登录请求。。。')
 	response = session.post(url = url_login_check_one, headers = headers, data = data)
 	if response.status_code == 200:
 		result = json.loads(response.text, encoding = 'utf8')
-		print u'检查验证登录请求返回值...'
-		print u'%s'%result['result_message']
+		print('>>> %s'%result['result_message'])
 		if result['result_code'] != 0:
 			return False
 		else:
@@ -326,14 +326,13 @@ def login():
 		'tk':newapptk
 	}
 
-	print u'发送确认登录请求...'
+	print('>>> 发送检查登录请求返回值的请求')
 	response = session.post(url = url_login_check_two, headers = headers, data = data)
 	if response.status_code == 200:
 		result = json.loads(response.text, encoding = 'utf8')
-		print u'检查确认登录请求返回值...'
-		print u'%s'%result['result_message']
+		print('>>> %s'%result['result_message'])
 		if result['result_code'] == 0:
-			print u'用户: %s 登录成功'%result['username']
+			print('>>> 用户名: %s 登录成功'%result['username'])
 			global apptk
 			apptk = result['apptk']
 			return True
@@ -343,7 +342,7 @@ def login():
 		return False
 
 def getTravers():
-	print u'获取乘车人信息...'
+	print('>>> 获取乘客列表')
 	hander = {
 		'Accept':'application/json, text/javascript, */*; q=0.01',
 		'Accept-Encoding':'gzip, deflate, br',
@@ -366,16 +365,16 @@ def getTravers():
 	response = session.post(url = url_init_travels, headers = hander, data = data, verify = False)
 	if response.status_code == 200:
 		names = re.findall("'passenger_name':'(.*?)',", response.content)
-		print(format(u'',"_^25"))
+		print('   -------------------')
 		for string in names:
-			print u'序号:%d 名字:%s'%(index,string.decode('unicode-escape') )
+			print('   序号:%d 姓名:%s'%(index,string.decode('unicode-escape')))
 			index += 1
-		print(format(u'',"_^25"))
+		print('   -------------------')
 
 		global traveler_index
 		traveler_index = getANum(1,index)
 	else:
-		print u'重新获取联系人...'
+		print('>>> Error, 重新请求乘客列表')
 		# getTravers()
 
 # 检查用户登录状态
@@ -430,17 +429,19 @@ def getStation(Station):
 
 def checkInputStationAndTime():
 	global from_station
+	global from_station_code
 	global to_station
+	global to_station_code
 	global queryDate
 
-	from_station = getStation(from_station)
-	if not from_station:
-		print u'出发站错误'
+	from_station_code = getStation(from_station)
+	if not from_station_code:
+		print('>>> Error, 出发站错误')
 		exit()
 		return
-	to_station = getStation(to_station)
-	if not to_station:
-		print u'到达站错误'
+	to_station_code = getStation(to_station)
+	if not to_station_code:
+		print('>>> Error, 到达站错误')
 		exit()
 		return
 
@@ -449,20 +450,31 @@ def checkInputStationAndTime():
 	nowTime = int(time.time())
 
 	if nowTime > goalTime + 86400 or nowTime + 30 * 86400 < goalTime :
-		print u'日期错误'
+		print('>>> Error, 日期错误')
 		exit()
 		return
 
 def requestsLeftTickets():
 	try:
-		response = session.get(url_left_ticket%(queryDate,from_station,to_station))
+		response = session.get(url_left_ticket%(queryDate,from_station_code,to_station_code), headers = {
+			'Accept':'*/*',
+			'Accept-Encoding':'gzip, deflate, br',
+			'Accept-Language':'zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2',
+			'Cache-Control':'no-cache, max-age=0',
+			'Connection':'keep-alive',
+			'Host':'kyfw.12306.cn',
+			'If-Modified-Since':'0',
+			'Referer':'https://kyfw.12306.cn/otn/leftTicket/init?linktypeid=dc&fs=%s,%s&ts=%s,%s&date=%s&flag=N,N,Y'%(from_station,from_station_code,to_station,to_station_code,queryDate),
+			'X-Requested-With':'XMLHttpRequest',
+			'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:64.0) Gecko/20100101 Firefox/64.0',
+		})
 		Data = json.loads(response.content)
 		bHaveTicket = True
 	except Exception as e:
-		print u'没有查询到车辆信息'
+		print('>>> 没有检查到车次信息')
 		bHaveTicket = False
 
-	text = ''
+	# text = ''
 	global goal_train
 	global goal_seat
 	goal_train = ''
@@ -470,16 +482,16 @@ def requestsLeftTickets():
 
 	#解析车辆信息
 	if bHaveTicket:
-		print(format(u' 检测时间： %s '%time.strftime('%Y-%m-%d %H:%M:%S'),"*^50"))
+		print('>>> 时间: %s '%time.strftime('%Y-%m-%d %H:%M:%S'))
 		for data in Data['data']['result']:
 			trainInfo = data.split('|')
 
 			if not SecretStrs.get(trainInfo[3]) and trainInfo[0]:
 				SecretStrs[trainInfo[3]] = trainInfo[0]
-			textmp = u'车次:%6s %+5s:%-5s %+5s-%s 共 %-7s 商务座:%s 一等座:%s 二等座:%s 软卧:%s 硬卧:%s 硬座:%s 无座:%s\n' %(
-				trainInfo[3],CityR[trainInfo[6]],CityR[trainInfo[7]],trainInfo[8],trainInfo[9],trainInfo[10],
-				trainInfo[32] or '--',trainInfo[31] or '--',trainInfo[30] or '--',trainInfo[23] or '--',trainInfo[28] or '--',trainInfo[29] or '--',trainInfo[26] or '--')
-			text += textmp
+			# textmp = u'车次:%6s %+5s:%-5s %+5s-%s 共 %-7s 商务座:%s 一等座:%s 二等座:%s 软卧:%s 硬卧:%s 硬座:%s 无座:%s\n' %(
+			# 	trainInfo[3],CityR[trainInfo[6]],CityR[trainInfo[7]],trainInfo[8],trainInfo[9],trainInfo[10],
+			# 	trainInfo[32] or '--',trainInfo[31] or '--',trainInfo[30] or '--',trainInfo[23] or '--',trainInfo[28] or '--',trainInfo[29] or '--',trainInfo[26] or '--')
+			# text += textmp
 			if not input_Trains:
 				for s_id in input_Seats:
 					tempInt = int(s_id)
@@ -498,18 +510,17 @@ def requestsLeftTickets():
 		if goal_seat == 0:
 			timerDelay()
 		else:
-			print u'恭喜你，%s 车次 %s %s 有票'%(queryDate,goal_train,seat_desc[goal_seat])
+			print('>>> 恭喜！%s 车次 %s %s 有票'%(queryDate,goal_train,seat_desc[goal_seat]))
 			# 检查账户登录状态
 			status = checkLoginStatus()
 			if not status:
-				print(format(u' 重新登录账户 ',"_^40"))
+				print('>>> 重新登录账号')
 				result = False
 				while not result:
 					os.system('play ' + home_path + getSplitChar() + 'music.mp3')
 					result = login()
 
 			if SecretStrs[goal_train]:
-				print(format(u' 开始预定车票 ',"_^40"))
 				orderTicket()
 			else:
 				timerDelay()
@@ -520,7 +531,7 @@ def requestsLeftTickets():
 # 订票函数
 def orderTicket():
 	# 第一条消息
-	print u'发送预定请求...'
+	print('>>> 发送订票请求。。。')
 	headers = {
 		'Accept':'*/*',
 		'Accept-Encoding':'gzip, deflate, br',
@@ -542,8 +553,8 @@ def orderTicket():
 		'back_train_date':time.strftime('%Y-%m-%d',(time.localtime(time.time() + 15 * 86400))),
 		'tour_flag':'dc',
 		'purpose_codes':'ADULT',
-		'query_from_station_name':CityR[from_station],
-		'query_to_station_name':CityR[to_station],
+		'query_from_station_name':CityR[from_station_code],
+		'query_to_station_name':CityR[to_station_code],
 		'undefined':'',
 	}
 
@@ -555,7 +566,7 @@ def orderTicket():
 		return
 
 	# 第二条消息
-	print u'获取票信息...'
+	print('>>> 获取订单信息')
 	headers = {
 		'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
 		'Accept-Encoding':'gzip, deflate, br',
@@ -578,7 +589,7 @@ def orderTicket():
 	# print REPEAT_SUBMIT_TOKEN
 
 	# 第三条消息 得到所有乘车人信息
-	print u'获取乘车人列表...'
+	print('>>> 获取乘车人列表')
 	headers = {
 		'Accept':'*/*',
 		'Accept-Encoding':'gzip, deflate, br',
@@ -616,7 +627,7 @@ def orderTicket():
 	session.get('https://kyfw.12306.cn/otn/passcodeNew/getPassCodeNew?module=passenger&rand=randp&' + str(random.uniform(0,1)))
 			
 	# 第四条消息
-	print u'提交乘车人信息...'
+	print('>>> 提交乘车人信息')
 	headers = {
 		'Accept':'application/json, text/javascript, */*; q=0.01',
 		'Accept-Encoding':'gzip, deflate, br',
@@ -634,8 +645,8 @@ def orderTicket():
 	item1 = []
 	item2 = []
 
-	# passengerTicketStr: 3,0,1,陈跃旗,1,410922198910122411,18039493069,N_3,0,1,李璐雪,1,410725199303202041,18336090658,N
-	# passengerTicketStr: 3,0,1,陈跃旗,1,410922198910122411,18039493069,N
+	# passengerTicketStr: 3,0,1,陈XX,1,446456454656141212212,18039451122,N_3,0,1,李XX,1,45451123222445465611,1666666555,N
+	# passengerTicketStr: 3,0,1,陈XX,1,446456454656141212212,18039451122,N
 	# 座位编号,0,乘客类型,乘客名,证件类型,证件号,手机号码,保存常用联系人(Y或N(1个)/N_(多个))
 	item1.append(seat_code[goal_seat])
 	item1.append('0')
@@ -646,8 +657,8 @@ def orderTicket():
 	item1.append(person['mobile_no'])
 	item1.append('N')
 
-	# oldPassengerStr: 陈跃旗,1,410922198910122411,1_李璐雪,1,410725199303202041,1_
-	# oldPassengerStr: 陈跃旗,1,410922198910122411,1_
+	# oldPassengerStr: 陈XX,1,446456454656141212212,1_李XX,1,45451123222445465611,1_
+	# oldPassengerStr: 陈XX,1,446456454656141212212,1_
 	# 乘客名,证件类型,证件号,乘客类型
 	item2.append(person['passenger_name'])
 	item2.append(person['passenger_id_type_code'])
@@ -680,7 +691,7 @@ def orderTicket():
 		return
 
 	# 第五条消息
-	print u'获取订单队列...'
+	print('>>> 获取订单队列')
 	headers = {
 		'Accept':'application/json, text/javascript, */*; q=0.01',
 		'Accept-Encoding':'gzip, deflate, br',
@@ -733,12 +744,12 @@ def orderTicket():
 			index = index + 1
 		
 	if not result:
-		print u'获取订单信息错误，重新查询'
+		print('>>> Error, 重新活动订单队列')
 		timerDelay()
 		return
 
 	# 第六条消息
-	print u'确认订单...'
+	print('>>> 检查订单')
 	headers = {
 		'Accept':'application/json, text/javascript, */*; q=0.01',
 		'Accept-Encoding':'gzip, deflate, br',
@@ -778,7 +789,7 @@ def orderTicket():
 		return
 
 	# 第七条
-	print u'获取订单编号...'
+	print('>>> 获取订单号')
 	headers = {
 		'Accept':'application/json, text/javascript, */*; q=0.01',
 		'Accept-Encoding':'gzip, deflate, br',
@@ -809,7 +820,7 @@ def orderTicket():
 					if result['data'].get('msg'):
 						print result['data']['msg']
 					else:
-						print u'返回错误,重新获取'
+						print('>>> Error, 重新获取订单号')
 
 					time.sleep(1)
 				else:
@@ -819,7 +830,7 @@ def orderTicket():
 			times += 1
 
 	if orderId != '':
-		print u'订票成功 订单号: %s，请于30分钟内付款'%orderId
+		print('>>> 恭喜你! 订单号: %s, 请于30分钟内登录官网付款'%orderId)
 		suucessTip = Image.open(home_path + getSplitChar() + 'success.jpg')
 		suucessTip.show()
 		suucessTip.close()
@@ -830,6 +841,6 @@ def orderTicket():
 		# errorTip = Image.open(home_path + getSplitChar() + 'error.png')
 		# errorTip.show()
 		# errorTip.close()
-		print u'unknown error, try it again !'
+		print('未知错误, 重新检查车次信息!')
 		timerDelay()
 	
