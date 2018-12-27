@@ -257,7 +257,7 @@ def checkImageIds():
 	code = result['result_code']
 	
 	# 取出验证结果，4：成功  5：验证失败  7：过期
-	print('>>> %s'%result['result_message'])
+	print('>>> %s'%result['result_message'].encode('utf8'))
 	if str(code) == '4':
 		return True
 	else:
@@ -299,7 +299,6 @@ def login():
 	if result['result_code'] == 0:
 		pass
 	else:
-		initAccount()
 		return False
 
 	# {"result_message":"密码输入错误次数过多，用户将锁定20 分钟,请稍后再试。","result_code":1}
@@ -331,7 +330,7 @@ def login():
 		result = json.loads(response.text, encoding = 'utf8')
 		print('>>> %s'%result['result_message'].encode('utf8'))
 		if result['result_code'] == 0:
-			print('>>> 用户名: %s 登录成功'%result['username'])
+			print('>>> 用户名: %s 登录成功'%result['username'].encode('utf8'))
 			global apptk
 			apptk = result['apptk']
 			return True
@@ -366,7 +365,7 @@ def getTravers():
 		names = re.findall("'passenger_name':'(.*?)',", response.content)
 		print('   -------------------')
 		for string in names:
-			print('   序号:%d 姓名:%s'%(index,string.decode('unicode-escape')))
+			print('   序号:%d 姓名:%s'%(index,string.decode('unicode-escape').encode('utf8')))
 			index += 1
 		print('   -------------------')
 
@@ -509,7 +508,7 @@ def requestsLeftTickets():
 		if goal_seat == 0:
 			timerDelay()
 		else:
-			print('>>> 恭喜！%s 车次 %s %s 有票'%(queryDate,goal_train,seat_desc[goal_seat]))
+			print('>>> 恭喜！%s 车次 %s %s 有票'%(queryDate,goal_train.encode('utf8'),seat_desc[goal_seat]))
 			# 检查账户登录状态
 			status = checkLoginStatus()
 			if not status:
@@ -829,7 +828,7 @@ def orderTicket():
 			times += 1
 
 	if orderId != '':
-		print('>>> 恭喜你! 订单号: %s, 请于30分钟内登录官网付款'%orderId)
+		print('>>> 恭喜你! 订单号: %s, 请于30分钟内登录官网付款'%orderId.encode('utf8'))
 		suucessTip = Image.open(home_path + getSplitChar() + 'success.jpg')
 		suucessTip.show()
 		suucessTip.close()
@@ -837,10 +836,8 @@ def orderTicket():
 			os.system('play ' + home_path + getSplitChar() + 'music.mp3')
 		exit()
 	else:
-		# print u'请登录12306查看未完成订单详情'
-		# errorTip = Image.open(home_path + getSplitChar() + 'error.png')
-		# errorTip.show()
-		# errorTip.close()
-		print('未知错误, 重新检查车次信息!')
-		timerDelay()
+		print('未知错误, 请登录官网检查后，重新运行程序!')
+		errorTip = Image.open(home_path + getSplitChar() + 'error.png')
+		errorTip.show()
+		errorTip.close()
 	
