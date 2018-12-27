@@ -7,13 +7,13 @@ import function
 if __name__ == '__main__':
 	print('>>>>> 开始程序')
 
-	# 初始化参数
+	# # 初始化参数
 	function.init()
 
 	# 登录账户
 	status = function.checkLoginStatus()
 	if not status:
-		print('>>>>> Login account')
+		print('>>>>> 登录账号')
 		result = False
 		while not result:
 			result = function.login()

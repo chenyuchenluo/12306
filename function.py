@@ -105,8 +105,7 @@ def timerDelay():
 	timer.start()
 
 def getSplitChar():
-	sysName = platform.system()
-	if sysName == 'Windows':
+	if platform.system() == 'Windows':
 		return '\\'
 	else:
 		return '/'
@@ -296,7 +295,7 @@ def login():
 			state = True
 		except Exception as e:
 			pass
-	print('>>> %s'%result['result_message'])
+	print('>>> %s'%result['result_message'].encode('utf8'))
 	if result['result_code'] == 0:
 		pass
 	else:
@@ -313,7 +312,7 @@ def login():
 	response = session.post(url = url_login_check_one, headers = headers, data = data)
 	if response.status_code == 200:
 		result = json.loads(response.text, encoding = 'utf8')
-		print('>>> %s'%result['result_message'])
+		print('>>> %s'%result['result_message'].encode('utf8'))
 		if result['result_code'] != 0:
 			return False
 		else:
@@ -330,7 +329,7 @@ def login():
 	response = session.post(url = url_login_check_two, headers = headers, data = data)
 	if response.status_code == 200:
 		result = json.loads(response.text, encoding = 'utf8')
-		print('>>> %s'%result['result_message'])
+		print('>>> %s'%result['result_message'].encode('utf8'))
 		if result['result_code'] == 0:
 			print('>>> 用户名: %s 登录成功'%result['username'])
 			global apptk
@@ -561,7 +560,7 @@ def orderTicket():
 	response = session.post(url = url_order_ticket_one, headers = headers, data = data, verify = False)
 	result = json.loads(response.content, encoding = 'utf8')
 	if not result['status']:
-		print result['messages'][0]
+		print result['messages'][0].encode('utf8')
 		# orderTicket()
 		return
 
@@ -686,7 +685,7 @@ def orderTicket():
 	result = json.loads(response.content)
 
 	if not result['status']:
-		print u'%s'%result['messages']
+		print('%s'%result['messages'].encode('utf8'))
 		timerDelay()
 		return
 
@@ -784,7 +783,7 @@ def orderTicket():
 	response = session.post(url = url_order_ticket_six, headers = headers, data = data, verify = False)
 	result = json.loads(response.content, encoding = 'utf8')
 	if not result['status']:
-		print u'%s'%result['messages'][0]
+		print('%s'%result['messages'][0].encode('utf8'))
 		timerDelay()
 		return
 
@@ -811,21 +810,21 @@ def orderTicket():
 	status = False
 	orderId = ''
 
-	while not status and times < 5:
+	while not status and times <= 5:
 		try:
 			response = session.get(url_order_ticket_seven, headers = headers, params = data)
 			result = json.loads(response.content, encoding = 'utf8')
 			if result['data']:
 				if not result['data'].get('orderId'):
 					if result['data'].get('msg'):
-						print result['data']['msg']
+						print(result['data']['msg'].encode('utf8'))
 					else:
 						print('>>> Error, 重新获取订单号')
-
-					time.sleep(1)
+					time.sleep(0.5)
 				else:
 					orderId = result['data']['orderId']
-			status = True
+					status = True
+			times += 1
 		except Exception as e:
 			times += 1
 
@@ -834,7 +833,8 @@ def orderTicket():
 		suucessTip = Image.open(home_path + getSplitChar() + 'success.jpg')
 		suucessTip.show()
 		suucessTip.close()
-		os.system('play ' + home_path + getSplitChar() + 'music.mp3')
+		if platform.system() == 'Windows':
+			os.system('play ' + home_path + getSplitChar() + 'music.mp3')
 		exit()
 	else:
 		# print u'请登录12306查看未完成订单详情'
