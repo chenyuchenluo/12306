@@ -63,6 +63,12 @@ SecretStrs = {}
 def init():
 	initCity(c_js)
 
+	global strPrintCode
+	if platform.system() == 'Windows':
+		strPrintCode = 'gbk'
+	else:
+		strPrintCode = 'utf8'
+
 	global from_station
 	global from_station_code
 	global to_station
@@ -295,7 +301,7 @@ def login():
 			state = True
 		except Exception as e:
 			pass
-	print('>>> %s'%result['result_message'].encode('utf8'))
+	print('>>> %s'%result['result_message'].encode(strPrintCode))
 	if result['result_code'] == 0:
 		pass
 	else:
@@ -312,7 +318,7 @@ def login():
 	response = session.post(url = url_login_check_one, headers = headers, data = data)
 	if response.status_code == 200:
 		result = json.loads(response.text, encoding = 'utf8')
-		print('>>> %s'%result['result_message'].encode('utf8'))
+		print('>>> %s'%result['result_message'].encode(strPrintCode))
 		if result['result_code'] != 0:
 			return False
 		else:
@@ -329,7 +335,7 @@ def login():
 	response = session.post(url = url_login_check_two, headers = headers, data = data)
 	if response.status_code == 200:
 		result = json.loads(response.text, encoding = 'utf8')
-		print('>>> %s'%result['result_message'].encode('utf8'))
+		print('>>> %s'%result['result_message'].encode(strPrintCode))
 		if result['result_code'] == 0:
 			print('>>> 用户名: %s 登录成功'%result['username'])
 			global apptk
@@ -560,7 +566,7 @@ def orderTicket():
 	response = session.post(url = url_order_ticket_one, headers = headers, data = data, verify = False)
 	result = json.loads(response.content, encoding = 'utf8')
 	if not result['status']:
-		print result['messages'][0].encode('utf8')
+		print result['messages'][0].encode(strPrintCode)
 		# orderTicket()
 		return
 
@@ -685,7 +691,7 @@ def orderTicket():
 	result = json.loads(response.content)
 
 	if not result['status']:
-		print('%s'%result['messages'].encode('utf8'))
+		print('%s'%result['messages'].encode(strPrintCode))
 		timerDelay()
 		return
 
@@ -783,7 +789,7 @@ def orderTicket():
 	response = session.post(url = url_order_ticket_six, headers = headers, data = data, verify = False)
 	result = json.loads(response.content, encoding = 'utf8')
 	if not result['status']:
-		print('%s'%result['messages'][0].encode('utf8'))
+		print('%s'%result['messages'][0].encode(strPrintCode))
 		timerDelay()
 		return
 
@@ -817,7 +823,7 @@ def orderTicket():
 			if result['data']:
 				if not result['data'].get('orderId'):
 					if result['data'].get('msg'):
-						print(result['data']['msg'].encode('utf8'))
+						print(result['data']['msg'].encode(strPrintCode))
 					else:
 						print('>>> Error, 重新获取订单号')
 					time.sleep(0.5)
