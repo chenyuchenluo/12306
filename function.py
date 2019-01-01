@@ -140,17 +140,17 @@ def initCity(city):
 
 def inputTrainInfo():
 	global input_Trains
+	input_Trains = []
 	print('   ----------------------')
 	print('   例如:k2276 g1890 k4792')
 	print('>>> 请输入车次，按 enter 默认全部')
-	trains = raw_input()
-	trains = trains.upper()
-	input_Trains = trains.split()
+	# trains = raw_input()
+	# trains = trains.upper()
+	# input_Trains = trains.split()
 	# input_Trains = ['G4314','G1874','G1862','G1882','G1894','G1870']
 
 	if not input_Trains:
-		# input_Trains = ['K4808','K2278','T328']
-		input_Trains = []
+		input_Trains = ['T326']
 
 def inputSeatInfo():
 	global input_Seats
@@ -159,15 +159,15 @@ def inputSeatInfo():
 	for index in seat_desc:
 		print('   * %d:%s'%(index,seat_desc[index]))
 	print('>>> 例如:5 4 6 3 2 1 7')
-	temp = raw_input()
-	temp = temp.split()
-	for index in temp:
-		if type(int(index)) == type(1) and int(index) >= 1 and int(index) <= 7 :
-			input_Seats.append(index)
-		else:
-			print('>>> Error, 重新输入')
-			inputSeatInfo()
-			return
+	# temp = raw_input()
+	# temp = temp.split()
+	# for index in temp:
+	# 	if type(int(index)) == type(1) and int(index) >= 1 and int(index) <= 7 :
+	# 		input_Seats.append(index)
+	# 	else:
+	# 		print('>>> Error, 重新输入')
+	# 		inputSeatInfo()
+	# 		return
 
 	if not input_Seats:
 		input_Seats = ['5']
@@ -489,11 +489,11 @@ def requestsLeftTickets():
 			# textmp = u'车次:%6s %+5s:%-5s %+5s-%s 共 %-7s 商务座:%s 一等座:%s 二等座:%s 软卧:%s 硬卧:%s 硬座:%s 无座:%s\n' %(
 			# 	trainInfo[3],CityR[trainInfo[6]],CityR[trainInfo[7]],trainInfo[8],trainInfo[9],trainInfo[10],
 			# 	trainInfo[32] or '--',trainInfo[31] or '--',trainInfo[30] or '--',trainInfo[23] or '--',trainInfo[28] or '--',trainInfo[29] or '--',trainInfo[26] or '--')
-			# text += textmp
+			# print(textmp)
 			if not input_Trains:
 				for s_id in input_Seats:
 					tempInt = int(s_id)
-					if goal_seat == 0 and trainInfo[seat_index[tempInt]] and trainInfo[seat_index[tempInt]] != '无':
+					if goal_seat == 0 and trainInfo[seat_index[tempInt]] and trainInfo[seat_index[tempInt]] != '无' and trainInfo[seat_index[tempInt]] != '*':
 						goal_train = trainInfo[3]
 						goal_seat = tempInt
 			else:
@@ -501,7 +501,7 @@ def requestsLeftTickets():
 					if trainInfo[3] == trainId:
 						for s_id in input_Seats:
 							tempInt = int(s_id)
-							if goal_seat == 0 and trainInfo[seat_index[tempInt]] and trainInfo[seat_index[tempInt]] != '无':
+							if goal_seat == 0 and trainInfo[seat_index[tempInt]] and trainInfo[seat_index[tempInt]] != '无' and trainInfo[seat_index[tempInt]] != '*':
 								goal_train = trainInfo[3]
 								goal_seat = tempInt
 
@@ -515,10 +515,10 @@ def requestsLeftTickets():
 				print('>>> 重新登录账号')
 				result = False
 				while not result:
-					os.system('play ' + home_path + getSplitChar() + 'music.mp3')
+					os.system(home_path + getSplitChar() + 'music.mp3')
 					result = login()
 
-			if SecretStrs[goal_train]:
+			if SecretStrs.get(goal_train):
 				orderTicket()
 			else:
 				timerDelay()
@@ -832,11 +832,12 @@ def orderTicket():
 		suucessTip = Image.open(home_path + getSplitChar() + 'success.jpg')
 		suucessTip.show()
 		suucessTip.close()
-		# os.system('play ' + home_path + getSplitChar() + 'music.mp3')
+		os.system(home_path + getSplitChar() + 'music.mp3')
 		exit()
 	else:
 		print('未知错误, 请登录官网检查后，重新运行程序!')
-		errorTip = Image.open(home_path + getSplitChar() + 'error.png')
-		errorTip.show()
-		errorTip.close()
+		# errorTip = Image.open(home_path + getSplitChar() + 'error.png')
+		# errorTip.show()
+		# errorTip.close()
+		timerDelay()
 	
