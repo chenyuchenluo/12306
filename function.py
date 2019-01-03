@@ -150,7 +150,7 @@ def inputTrainInfo():
 	# input_Trains = ['G4314','G1874','G1862','G1882','G1894','G1870']
 
 	if not input_Trains:
-		input_Trains = ['T326']
+		input_Trains = ['T326','K2276','K2906','K4162','K1238']
 
 def inputSeatInfo():
 	global input_Seats
@@ -462,7 +462,8 @@ def requestsLeftTickets():
 			'Connection':'keep-alive',
 			'Host':'kyfw.12306.cn',
 			'If-Modified-Since':'0',
-			'Referer':'https://kyfw.12306.cn/otn/leftTicket/init?linktypeid=dc&fs=%s,%s&ts=%s,%s&date=%s&flag=N,N,Y'%(from_station,from_station_code,to_station,to_station_code,queryDate),
+			# 'Referer':'https://kyfw.12306.cn/otn/leftTicket/init?linktypeid=dc&fs=%s,%s&ts=%s,%s&date=%s&flag=N,N,Y'%(from_station,from_station_code,to_station,to_station_code,queryDate),
+			'Referer':'https://kyfw.12306.cn/otn/leftTicket/init?random=%d'%int(round(time.time() * 1000)),
 			'X-Requested-With':'XMLHttpRequest',
 			'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:64.0) Gecko/20100101 Firefox/64.0',
 		})
